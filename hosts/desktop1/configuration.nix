@@ -147,6 +147,9 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   environment.variables.EDITOR = "vim";
 
+  nix.settings.extra-platforms = [ "aarch64-linux" ];
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;
