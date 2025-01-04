@@ -15,6 +15,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "desktop1"; # Define your hostname.
+  networking.extraHosts = "10.69.69.100 master0-k\n10.69.69.18 worker0-k\n10.69.69.23 worker1-k\n10.69.69.19 worker2-k\n10.69.69.20 worker3-k";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
