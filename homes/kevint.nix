@@ -31,6 +31,17 @@
     enableCompletion = true;
   };
 
+  programs.vscode = {
+      enable = true;
+      extensions = with pkgs.vscode-extensions; [
+	vscodevim.vim
+        bbenoist.nix
+        ms-python.python
+        ms-azuretools.vscode-docker
+        ms-vscode-remote.remote-ssh
+      ];
+  };
+
   home.stateVersion = "24.11";
 
   programs.home-manager.enable = true;
