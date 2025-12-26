@@ -60,8 +60,11 @@
       system = "aarch64-darwin";
       modules = [
         ./hosts/laptop4/configuration.nix
-        kevint-module
-       ];
+        # kevint-module
+      ];
+      specialArgs = {
+        flake = self;
+      };
     };
   };
 }

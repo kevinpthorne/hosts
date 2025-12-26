@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ flake, pkgs, ... }:
 {
     imports = [
         ./hardware-configuration.nix
@@ -8,12 +8,12 @@
     nix.settings.experimental-features = "nix-command flakes";
 
     # Enable alternative shell support in nix-darwin.
-    # programs.fish.enable = true;
+    programs.fish.enable = true;
 
     # Set Git commit hash for darwin-version.
-    system.configurationRevision = self.rev or self.dirtyRev or null;
+    system.configurationRevision = flake.rev or flake.dirtyRev or null;
 
     # Used for backwards compatibility, please read the changelog before changing.
     # $ darwin-rebuild changelog
-    system.stateVersion = 6;
+    system.stateVersion = 5;
 }
