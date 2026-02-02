@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  imports = [
+    ./_modules/virt-manager.nix
+  ];
+
   home.username = "kevint";
   home.homeDirectory = "/home/kevint";
   
@@ -34,7 +38,7 @@
   programs.vscode = {
       enable = true;
       extensions = with pkgs.vscode-extensions; [
-	vscodevim.vim
+	      vscodevim.vim
         bbenoist.nix
         ms-python.python
         ms-azuretools.vscode-docker
