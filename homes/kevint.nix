@@ -26,8 +26,10 @@
 
   programs.git = {
     enable = true;
-    userName = "Kevin Thorne";
-    userEmail = "me@kevinpthorne.com";
+    settings = {
+      user.name = "Kevin Thorne";
+      user.email = "me@kevinpthorne.com";
+    };
   };
 
   programs.bash = {
@@ -37,7 +39,7 @@
 
   programs.vscode = {
       enable = true;
-      extensions = with pkgs.vscode-extensions; [
+      profiles.default.extensions = with pkgs.vscode-extensions; [
 	      vscodevim.vim
         bbenoist.nix
         ms-python.python
@@ -46,7 +48,7 @@
       ];
   };
 
-  home.stateVersion = "24.11";
+  home.stateVersion = "25.11";
 
   programs.home-manager.enable = true;
 }
