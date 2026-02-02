@@ -13,6 +13,7 @@
       # to avoid problems caused by different versions of nixpkgs.
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    gnome-fix.url = "github:LucasFA/.nixos/9cfda103f9781ad02af08b98efe04a61f3d7e7bc";
   };
 
   outputs = { self, nixpkgs, home-manager, gnome-fix, ... }@inputs: {
