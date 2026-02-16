@@ -1,5 +1,5 @@
 {
-  description = "Desktop1 NixOS config";
+  description = "NixOS config";
 
   inputs = {
     # NixOS official package source, using the nixos-24.11 branch here
@@ -13,25 +13,55 @@
       # to avoid problems caused by different versions of nixpkgs.
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    gnome-fix.url = "github:LucasFA/.nixos/9cfda103f9781ad02af08b98efe04a61f3d7e7bc";
+
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.11-darwin";
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/nix-darwin-24.11";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, gnome-fix, ... }@inputs: {
-    nixosConfigurations.desktop1 = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        # Import the previous configuration.nix we used,
-        # so the old configuration file still takes effect
-        ./hosts/desktop1/configuration.nix
-	# make home-manager as a module of nixos
-        # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
-        home-manager.nixosModules.home-manager
+  outputs = { self, nixpkgs, home-manager, nix-darwin, ... }@inputs: 
+  let
+    kevint-module = home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.kevint = import ./homes/kevint.nix;
-        }
-      ];
+        };
+  in {
+    nixosConfigurations = {
+      desktop1 = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          # Import the previous configuration.nix we used,
+          # so the old configuration file still takes effect
+          ./hosts/desktop1/configuration.nix
+          # make home-manager as a module of nixos
+          # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
+          kevint-module
+        ];
+      };
+
+      laptop4-builder = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          # Import the previous configuration.nix we used,
+          # so the old configuration file still takes effect
+          ./hosts/laptop4-buidler/configuration.nix
+          # make home-manager as a module of nixos
+          # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
+          kevint-module
+        ];
+      };
+    };
+
+    darwinConfigurations.laptop4 = nix-darwin.lib.darwinSystem {
+      system = "aarch64-darwin";
+      modules = [
+        ./hosts/laptop4/configuration.nix
+        kevint-module
+       ];
     };
   };
 }
