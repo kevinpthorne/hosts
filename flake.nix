@@ -22,14 +22,7 @@
   };
 
   outputs = { self, nixpkgs, home-manager, nix-darwin, ... }@inputs: 
-  let
-    kevint-module = home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.kevint = ./homes/kevint.nix;
-        };
-  in {
+  {
     nixosConfigurations = {
       desktop1 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -39,7 +32,11 @@
           ./hosts/desktop1/configuration.nix
           # make home-manager as a module of nixos
           # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
-          kevint-module
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.kevint = ./homes/kevint.nix;
+          }
         ];
       };
       laptop4-builder = nixpkgs.lib.nixosSystem {
@@ -50,7 +47,11 @@
           ./hosts/laptop4-builder/configuration.nix
           # make home-manager as a module of nixos
           # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
-          kevint-module
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.kevint = ./homes/kevint.nix;
+          }
         ];
       };
     };
@@ -59,7 +60,6 @@
       system = "aarch64-darwin";
       modules = [
         ./hosts/laptop4/configuration.nix
-        # kevint-module
       ];
       specialArgs = {
         flake = self;
