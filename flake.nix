@@ -50,7 +50,7 @@
           ./hosts/laptop4-builder/configuration.nix
           # make home-manager as a module of nixos
           # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
-          kevint-module
+          # kevint-module
         ];
       };
     };
