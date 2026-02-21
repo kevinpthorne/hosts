@@ -27,6 +27,14 @@
         services.squid = {
             enable = true;
             extraConfig = ''
+            dns_v4_first on
+            dns_nameservers 1.1.1.3 208.67.222.123
+
+            http_port 127.0.0.1:3128
+            http_port 172.18.0.1:3128
+
+            cache deny all
+
             # Define the allowed domain
             ${lib.concatMapStringsSep "\n" (domain: "acl allowed_domains dstdomain ${domain}") config.transparent-proxy.allowedDomains}
             
@@ -85,6 +93,8 @@
                 User = "svc-redsocks";
             };
         };
+
+        networking.firewall.allowedTCPPorts = [ 12345 3128 ];
 
         # 3. Iptables (Targeting ONLY the isolated subnet)
         networking.firewall.extraCommands = ''

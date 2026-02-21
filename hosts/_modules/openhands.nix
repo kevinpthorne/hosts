@@ -55,7 +55,7 @@
                 "github.com"
 
                 # container reg
-                "docker.all-hands.dev"
+                "docker.openhands.dev"
 
                 # --- Go Package Management ---
                 "proxy.golang.org"       # The default GOPROXY
