@@ -13,7 +13,7 @@
         };
         container = lib.mkOption {
             type = lib.types.str;
-            default = "docker.all-hands.dev/all-hands-ai/openhands:latest";
+            default = "docker.openhands.dev/openhands/openhands:1.4";
         };
         secretsEnvFile = lib.mkOption {
             type = lib.types.str;
@@ -35,6 +35,7 @@
 
     config = let
         openhandsCidr = "172.18.0.0/16";
+        openhandsDockernet = "openhands_net";
     in lib.mkIf config.openhands.enable {
         # 1. Create a dedicated service account and group
         users.groups.svc-openhands = {};
@@ -53,6 +54,9 @@
                 ".googleapis.com"
                 "github.com"
 
+                # container reg
+                "docker.all-hands.dev"
+
                 # --- Go Package Management ---
                 "proxy.golang.org"       # The default GOPROXY
                 "sum.golang.org"         # The default checksum database
@@ -61,24 +65,31 @@
                 "gopkg.in"               # Very common Go package router (e.g., gopkg.in/yaml.v2)
                 "go.googlesource.com"    # Host for golang.org/x/... extended packages
             ];
+            dockernetName = openhandsDockernet;
         };
         openhands-scanner.enable = true;
+
+        environment.systemPackages = with pkgs; [
+            docker
+        ];
+
+        virtualisation.docker.enable = true;
+        virtualisation.docker.rootless = {
+            enable = true;
+            setSocketVariable = true;
+        };
 
         # 3. Define the OpenHands systemd service
         systemd.services.openhands = {
             description = "OpenHands AI Agent Service";
             wantedBy = [ "multi-user.target" ];
-            after = [ "network.target" "docker.service" ];
-            requires = [ "docker.service" ];
+            after = [ "network.target" "docker.service" "openhands-scanner.service" "my-redsocks.service" "docker.socket" ];
+            requires = [ "docker.service" "docker.socket" ];
 
             # Ensure necessary state directories exist before starting
             preStart = ''
             mkdir -p ${config.openhands.home}/workspace
             mkdir -p ${config.openhands.home}/state
-
-            # Create the custom isolated network if it doesn't exist
-            ${pkgs.docker}/bin/docker network inspect openhands_net >/dev/null 2>&1 || \
-            ${pkgs.docker}/bin/docker network create --subnet=${openhandsCidr} openhands_net
             '';
 
             serviceConfig = {
@@ -107,12 +118,16 @@
                 ExecStart = ''
                     ${pkgs.docker}/bin/docker run --rm \
                     --name openhands-app \
+                    --network ${openhandsDockernet} \
                     --cpus="${config.openhands.cpus}" \
                     --memory="${config.openhands.mem}" \
                     --memory-swap="${config.openhands.mem}" \
                     -e LLM_MODEL \
                     -e LLM_API_KEY \
                     -e WORKSPACE_BASE \
+                    -e AGENT_SERVER_IMAGE_REPOSITORY=ghcr.io/openhands/agent-server \
+                    -e AGENT_SERVER_IMAGE_TAG=1.11.4-python \
+                    -e LOG_ALL_EVENTS=true \
                     -v /var/run/docker.sock:/var/run/docker.sock \
                     -v ${config.openhands.home}/state:/.openhands-state \
                     -v ${config.openhands.home}/workspace:/opt/workspace_base \

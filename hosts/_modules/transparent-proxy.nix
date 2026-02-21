@@ -16,6 +16,10 @@
                 "example.org"
             ];
         };
+        dockernetName = lib.mkOption {
+            type = lib.types.str;
+            default = "openhands_net";
+        };
     };
 
     config = lib.mkIf config.transparent-proxy.enable {
@@ -32,11 +36,30 @@
             '';
         };
 
+        # TODO make optional
+        environment.systemPackages = with pkgs; [
+            docker
+        ];
+
+        users.groups.svc-redsocks = {};
+        users.users.svc-redsocks = {
+            isSystemUser = true;
+            group = "svc-redsocks";
+            extraGroups = [ "docker" ]; # Required for OpenHands to spin up sandboxes
+        };
+
         # 2. Redsocks (Transparent Network Interception)
-        systemd.services.openhands-redsocks = {
-            description = "OpenHands Isolated Transparent Proxy (Redsocks)";
+        systemd.services.my-redsocks = {
+            description = "Isolated Transparent Proxy (Redsocks)";
             wantedBy = [ "multi-user.target" ];
-            after = [ "network.target" "squid.service" ];
+            after = [ "network.target" "squid.service" "docker.socket" "docker.service" ];
+            requires = [ "docker.socket" "docker.service" ];
+
+            preStart = ''
+                # Create the custom isolated network if it doesn't exist
+                ${pkgs.docker}/bin/docker network inspect ${config.transparent-proxy.dockernetName} >/dev/null 2>&1 || \
+                ${pkgs.docker}/bin/docker network create --subnet=${config.transparent-proxy.ipCidr} ${config.transparent-proxy.dockernetName}
+            '';
             
             serviceConfig = let
                 redsocksConf = pkgs.writeText "redsocks.conf" ''
@@ -59,7 +82,7 @@
                 # Run the redsocks binary directly using our custom config file
                 ExecStart = "${pkgs.redsocks}/bin/redsocks -c ${redsocksConf}";
                 Restart = "on-failure";
-                User = "nobody";
+                User = "svc-redsocks";
             };
         };
 
