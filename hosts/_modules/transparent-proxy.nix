@@ -23,30 +23,43 @@
     };
 
     config = lib.mkIf config.transparent-proxy.enable {
-        # 1. Squid Proxy (Domain Filtering)
-        services.squid = {
+
+        services.unbound = {
             enable = true;
+            settings = lib.mkForce {}; # We provide our own raw config
             extraConfig = ''
-            dns_v4_first on
-            dns_nameservers 1.1.1.3 208.67.222.123
+                server:
+                    interface: 172.18.0.1
+                    access-control: 172.18.0.0/16 allow
+                    
+                    # Default: Return NXDOMAIN for everything not explicitly listed
+                    local-zone: "." static
+                    
+                    # Allowed Domains
+                    ${lib.concatMapStringsSep "\n" (domain: ''
+                        local-zone: "${domain}." transparent
+                    '') config.transparent-proxy.allowedDomains}
 
-            http_port 127.0.0.1:3128
-            http_port 172.18.0.1:3128
-
-            cache deny all
-
-            # Define the allowed domain
-            ${lib.concatMapStringsSep "\n" (domain: "acl allowed_domains dstdomain ${domain}") config.transparent-proxy.allowedDomains}
-            
-            # Allow traffic to allowed_domains, deny absolutely everything else
-            http_access allow allowed_domains
-            http_access deny all
+                    # Forward allowed queries to a real upstream (e.g., Cloudflare)
+                    forward-zone:
+                        name: "."
+                        forward-addr: 1.1.1.3
+                        forward-addr: 208.67.222.123
             '';
+        };
+        systemd.services.openhands-socks = {
+            description = "OpenHands Internal SOCKS Proxy";
+            after = [ "network.target" ];
+            serviceConfig = {
+                ExecStart = "${pkgs.microsocks}/bin/microsocks -i 127.0.0.1 -p 1080";
+                User = "nobody";
+            };
         };
 
         # TODO make optional
         environment.systemPackages = with pkgs; [
             docker
+            microsocks
         ];
 
         users.groups.svc-redsocks = {};
@@ -81,8 +94,8 @@
                         local_ip = ${config.transparent-proxy.listenIp}; 
                         local_port = 12345;
                         ip = 127.0.0.1;
-                        port = 3128;
-                        type = http-connect;
+                        port = 1080;
+                        type = socks5;
                     }
                 '';
             in {
@@ -94,7 +107,8 @@
             };
         };
 
-        networking.firewall.allowedTCPPorts = [ 12345 3128 ];
+        networking.firewall.allowedTCPPorts = [ 12345 1080 53 ];
+        networking.firewall.allowedUDPPorts = [ 53 ];
 
         # 3. Iptables (Targeting ONLY the isolated subnet)
         networking.firewall.extraCommands = ''
@@ -104,6 +118,10 @@
 
             # Rule 2: Intercept HTTP (80) just in case you ever whitelist an HTTP domain in Squid
             iptables -t nat -I PREROUTING -s 172.18.0.0/16 -p tcp --dport 80 -j REDIRECT --to-ports 12345
+
+            # DNS reroute
+            iptables -t nat -I PREROUTING -s 172.18.0.0/16 -p udp --dport 53 -j DNAT --to-destination 172.18.0.1:53
+            iptables -t nat -I PREROUTING -s 172.18.0.0/16 -p tcp --dport 53 -j DNAT --to-destination 172.18.0.1:53
 
             # Rule 3: Hard-drop all other outbound traffic from this specific subnet.
             # Because REDIRECT (above) alters the packet to hit localhost (INPUT chain), 
