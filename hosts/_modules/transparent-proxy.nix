@@ -84,36 +84,5 @@
             iptables -D DOCKER-USER -s 172.18.0.0/16 ! -d 172.18.0.0/16 -j REJECT || true
         '';
 
-        # 4. Update the OpenHands Systemd Service
-        systemd.services.openhands = {
-            # Ensure network setup happens before the container starts
-            preStart = ''
-            mkdir -p /var/lib/openhands/workspace
-            mkdir -p /var/lib/openhands/state
-            
-            # Create the custom isolated network if it doesn't exist
-            ${pkgs.docker}/bin/docker network inspect openhands_net >/dev/null 2>&1 || \
-            ${pkgs.docker}/bin/docker network create --subnet=172.18.0.0/16 openhands_net
-            '';
-
-            serviceConfig = {
-            # ... (Keep your existing User, Group, and EnvironmentFile lines here) ...
-            
-            # Add the --network flag to the docker run command
-            ExecStart = ''
-                ${pkgs.docker}/bin/docker run --rm \
-                --name openhands-app \
-                --network openhands_net \
-                -e LLM_MODEL \
-                -e LLM_API_KEY \
-                -e WORKSPACE_BASE \
-                -v /var/run/docker.sock:/var/run/docker.sock \
-                -v /var/lib/openhands/state:/.openhands-state \
-                -v /var/lib/openhands/workspace:/opt/workspace_base \
-                -p 3000:3000 \
-                docker.all-hands.dev/all-hands-ai/openhands:latest
-            '';
-            };
-        };
-        };
+    };
 }
