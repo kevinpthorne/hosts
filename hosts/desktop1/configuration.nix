@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./../_modules/virt-manager.nix
+      ./../_modules/openhands.nix
     ];
 
   # Bootloader.
