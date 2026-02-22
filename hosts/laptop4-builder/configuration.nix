@@ -51,6 +51,9 @@
     variant = "";
   };
 
+  # fix for home-manager
+  programs.dconf.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.kevint = {
     isNormalUser = true;
