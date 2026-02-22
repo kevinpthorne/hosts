@@ -30,6 +30,12 @@
     fsType = "9p";
     options = [ "rw" "nofail" "trans=virtio" "version=9p2000.L" "_netdev" "auto" ];
   };
+  # fix perms
+  fileSystems."/home/kevint/share" = {
+    device = "/mnt/share";
+    fsType = "fuse.bindfs";
+    options = [ "map=501/1000:@20/@1000" "x-systemd.requires=/mnt/share" "_netdev" "nofail" "auto" ];
+  };
 
   swapDevices = [ ];
 
