@@ -27,7 +27,7 @@
   # Host share
   fileSystems."/mnt/share" = {
     device = "share";
-    fstype = "virtiofs";
+    fsType = "virtiofs";
     options = [ "rw" "nofail" ];
   };
 
