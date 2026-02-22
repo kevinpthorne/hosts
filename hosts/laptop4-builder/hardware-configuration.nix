@@ -27,8 +27,8 @@
   # Host share
   fileSystems."/mnt/share" = {
     device = "share";
-    fsType = "virtiofs";
-    options = [ "rw" "nofail" ];
+    fsType = "9p";
+    options = [ "rw" "nofail" "trans=virtio" "version=9p2000.L" "_netdev" "auto" ];
   };
 
   swapDevices = [ ];
