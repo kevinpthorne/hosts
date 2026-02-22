@@ -24,6 +24,13 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
+  # Host share
+  fileSystems."/mnt/share" = {
+    device = "share";
+    fstype = "virtiofs";
+    options = [ "rw" "nofail" ];
+  };
+
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
