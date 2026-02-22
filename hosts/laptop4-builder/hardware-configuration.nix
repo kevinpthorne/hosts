@@ -6,6 +6,7 @@
 {
   imports =
     [ (modulesPath + "/profiles/qemu-guest.nix")
+      ./../_modules/utm.nix
     ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "virtio_pci" "usbhid" "usb_storage" "sr_mod" ];
@@ -23,19 +24,6 @@
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
-
-  # Host share
-  fileSystems."/mnt/share" = {
-    device = "share";
-    fsType = "9p";
-    options = [ "rw" "nofail" "trans=virtio" "version=9p2000.L" "_netdev" "auto" ];
-  };
-  # fix perms
-  fileSystems."/home/kevint/share" = {
-    device = "/mnt/share";
-    fsType = "fuse.bindfs";
-    options = [ "map=501/1000:@20/@1000" "x-systemd.requires=/mnt/share" "_netdev" "nofail" "auto" ];
-  };
 
   swapDevices = [ ];
 
