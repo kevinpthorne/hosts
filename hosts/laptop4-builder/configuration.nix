@@ -5,11 +5,12 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./../_modules/kevint-defaults.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ./../_modules/kevint-defaults.nix
+    ./../_modules/dev.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -59,8 +60,11 @@
   users.users.kevint = {
     isNormalUser = true;
     description = "Kevin Thorne";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
+    packages = with pkgs; [ ];
   };
 
   # Allow unfree packages
@@ -69,8 +73,8 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-     wget
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    wget
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -91,6 +95,13 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+
+  nix.settings.system-features = [
+    "kvm"
+    "nixos-test"
+    "big-parallel"
+    "benchmark"
+  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
