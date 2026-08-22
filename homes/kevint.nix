@@ -6,7 +6,7 @@
   ];
 
   home.username = "kevint";
-  home.homeDirectory = "/home/kevint";
+  # home.homeDirectory = "/home/kevint";
   
   home.packages = with pkgs; [
     neofetch
@@ -37,16 +37,16 @@
     enableCompletion = true;
   };
 
-  programs.vscode = {
-      enable = true;
-      profiles.default.extensions = with pkgs.vscode-extensions; [
-	      vscodevim.vim
-        bbenoist.nix
-        ms-python.python
-        ms-azuretools.vscode-docker
-        ms-vscode-remote.remote-ssh
-      ];
-  };
+  # programs.vscode = {
+  #     enable = true;
+  #     profiles.default.extensions = with pkgs.vscode-extensions; [
+	#       vscodevim.vim
+  #       bbenoist.nix
+  #       ms-python.python
+  #       ms-azuretools.vscode-docker
+  #       ms-vscode-remote.remote-ssh
+  #     ];
+  # };
 
   home.stateVersion = "25.11";
 

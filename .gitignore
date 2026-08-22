@@ -1,1 +1,6 @@
 result
+*.tf.json
+**/.terraform/*
+.terraform.lock.hcl
+*.tfstate*
+*.key
