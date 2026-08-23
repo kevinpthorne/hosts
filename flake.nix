@@ -160,20 +160,34 @@
         meta = {
           nixpkgs = import nixpkgs { system = "aarch64-linux"; };
           nodeNixpkgs = builtins.mapAttrs (name: value: value.pkgs) self.nixosConfigurations;
-          nodeSpecialArgs = builtins.mapAttrs (
-            name: value: value._module.specialArgs
-          ) self.nixosConfigurations;
-        };
-      }
-      //
-        builtins.mapAttrs
-          (name: value: {
-            imports = value._module.args.modules;
-          })
-          {
-            # Only deploy the instances we want with colmena
-            inherit (self.nixosConfigurations) "one.oc.kpt.link" "two.oc.kpt.link" "three.oc.kpt.link";
+          nodeSpecialArgs = {
+            "one.oc.kpt.link" = { inherit inputs; };
+            "two.oc.kpt.link" = { inherit inputs; };
+            "three.oc.kpt.link" = { inherit inputs; };
           };
+        };
+        "one.oc.kpt.link" = {
+          imports = [
+            inputs.p2p-vpn.nixosModules.default
+            inputs.disko.nixosModules.disko
+            ./hosts/one.oc.kpt.link/configuration.nix
+          ];
+        };
+        "two.oc.kpt.link" = {
+          imports = [
+            inputs.p2p-vpn.nixosModules.default
+            inputs.disko.nixosModules.disko
+            ./hosts/two.oc.kpt.link/configuration.nix
+          ];
+        };
+        "three.oc.kpt.link" = {
+          imports = [
+            inputs.p2p-vpn.nixosModules.default
+            inputs.disko.nixosModules.disko
+            ./hosts/three.oc.kpt.link/configuration.nix
+          ];
+        };
+      };
 
       apps."aarch64-darwin" =
         let

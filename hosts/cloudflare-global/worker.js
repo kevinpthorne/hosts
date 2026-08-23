@@ -31,6 +31,13 @@ export default {
     const zoneId = env.CF_ZONE_ID;
     const apiToken = env.CF_API_TOKEN;
 
+    if (!apiToken) {
+      return new Response("Error: CF_API_TOKEN is undefined in the worker environment!", { status: 500 });
+    }
+    if (!zoneId) {
+      return new Response("Error: CF_ZONE_ID is undefined in the worker environment!", { status: 500 });
+    }
+
     // First, we need to GET the DNS record ID for the targetDomain.
     const getRecordsUrl = "https://api.cloudflare.com/client/v4/zones/" + zoneId + "/dns_records?name=" + targetDomain + "&type=A";
     const getResp = await fetch(getRecordsUrl, {
@@ -40,7 +47,10 @@ export default {
       }
     });
 
-    if (!getResp.ok) return new Response("Error fetching record from Cloudflare", { status: 500 });
+    if (!getResp.ok) {
+      const errText = await getResp.text();
+      return new Response("Error fetching record from Cloudflare: " + getResp.status + " - " + errText, { status: 500 });
+    }
     const getJson = await getResp.json();
 
     if (!getJson.success || getJson.result.length === 0) {

@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   terraform.required_providers.cloudflare = {
@@ -13,7 +18,11 @@
     type = "string";
   };
   variable.cloudflare_api_token = {
-    description = "Cloudflare API Token";
+    description = "Cloudflare API Token (for Terraform)";
+    type = "string";
+  };
+  variable.cloudflare_worker_dns_token = {
+    description = "Scoped down Cloudflare API Token for the Worker (Zone.DNS permissions)";
     type = "string";
   };
   variable.secret_one_oc = {
@@ -25,21 +34,25 @@
   variable.secret_three_oc = {
     type = "string";
   };
-  
+
+  data.cloudflare_zone.main = {
+    name = "kpt.link";
+  };
+
   resource.cloudflare_workers_script.ddns_proxy = {
     account_id = "\${var.cloudflare_account_id}";
-    name       = "ddns-proxy";
-    content    = builtins.readFile ./worker.js;
-    module     = true;
-    
+    name = "ddns-proxy";
+    content = builtins.readFile ./worker.js;
+    module = true;
+
     secret_text_binding = [
       {
         name = "CF_API_TOKEN";
-        text = "\${var.cloudflare_api_token}";
+        text = "\${var.cloudflare_worker_dns_token}";
       }
       {
         name = "CF_ZONE_ID";
-        text = "kpt.link";
+        text = "\${data.cloudflare_zone.main.id}";
       }
       {
         name = "SECRET_ONE_OC";
@@ -57,6 +70,6 @@
   };
 
   # Deploy a route to make it accessible if you have a custom domain for workers
-  # Or rely on the workers.dev default domain! 
+  # Or rely on the workers.dev default domain!
   # Workers on workers.dev are enabled by default in Cloudflare.
 }

@@ -262,11 +262,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1787413161,
-        "narHash": "sha256-6n/34uz79hFABQW4NQff5WmmqWZ2TwIK/+MXLPd7g0w=",
+        "lastModified": 1787513664,
+        "narHash": "sha256-UoB1CzIAJPHqV9kNB/TKdZkKyYVZIhdN3Ytj29XnLhI=",
         "owner": "kevinpthorne",
         "repo": "p2p-vpn",
-        "rev": "f6f1f2c1bac2ba9a8dc544f177330c83455d72a9",
+        "rev": "5f2cc24eaca4aeaccaf81fa3b488446db1e34303",
         "type": "github"
       },
       "original": {
