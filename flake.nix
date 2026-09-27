@@ -198,92 +198,111 @@
         };
       };
 
-      apps."aarch64-darwin" =
-        let
-          pkgs = import nixpkgs {
-            system = "aarch64-darwin";
-            config.allowUnfree = true;
+      apps = {
+        "aarch64-linux" =
+          let
+            pkgs = import nixpkgs {
+              system = "aarch64-linux";
+              config.allowUnfree = true;
+            };
+          in
+          {
+            colmena = {
+              type = "app";
+              program = "${pkgs.colmena}/bin/colmena";
+            };
           };
-          terranixBin = terranix.packages."aarch64-darwin".terranix;
-        in
-        {
-          "apply-cloudflare" = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "apply-cloudflare" ''
-                cd hosts/cloudflare-global
-                ${terranixBin}/bin/terranix terraform.nix > config.tf.json
-                ${pkgs.terraform}/bin/terraform init
-                ${pkgs.terraform}/bin/terraform apply
-              ''
-            );
+        "aarch64-darwin" =
+          let
+            pkgs = import nixpkgs {
+              system = "aarch64-darwin";
+              config.allowUnfree = true;
+            };
+            terranixBin = terranix.packages."aarch64-darwin".terranix;
+          in
+          {
+            colmena = {
+              type = "app";
+              program = "${pkgs.colmena}/bin/colmena";
+            };
+            "apply-cloudflare" = {
+              type = "app";
+              program = toString (
+                pkgs.writeShellScript "apply-cloudflare" ''
+                  cd hosts/cloudflare-global
+                  ${terranixBin}/bin/terranix terraform.nix > config.tf.json
+                  ${pkgs.terraform}/bin/terraform init
+                  ${pkgs.terraform}/bin/terraform apply
+                ''
+              );
+            };
+            "destroy-cloudflare" = {
+              type = "app";
+              program = toString (
+                pkgs.writeShellScript "destroy-cloudflare" ''
+                  cd hosts/cloudflare-global
+                  ${terranixBin}/bin/terranix terraform.nix > config.tf.json
+                  ${pkgs.terraform}/bin/terraform init
+                  ${pkgs.terraform}/bin/terraform destroy
+                ''
+              );
+            };
+            "apply-three-oc" = {
+              type = "app";
+              program = toString (
+                pkgs.writeShellScript "apply-three-oc" ''
+                  cd hosts/three.oc.kpt.link
+                  ${terranixBin}/bin/terranix terraform.nix > config.tf.json
+                  ${pkgs.terraform}/bin/terraform init
+                  ${pkgs.terraform}/bin/terraform apply
+                ''
+              );
+            };
+            "destroy-three-oc" = {
+              type = "app";
+              program = toString (
+                pkgs.writeShellScript "destroy-three-oc" ''
+                  cd hosts/three.oc.kpt.link
+                  ${terranixBin}/bin/terranix terraform.nix > config.tf.json
+                  ${pkgs.terraform}/bin/terraform init
+                  ${pkgs.terraform}/bin/terraform destroy
+                ''
+              );
+            };
+            "apply-one-oc" = {
+              type = "app";
+              program = toString (
+                pkgs.writeShellScript "apply-one-oc" ''
+                  cd hosts/one.oc.kpt.link
+                  ${terranixBin}/bin/terranix terraform.nix > config.tf.json
+                  ${pkgs.terraform}/bin/terraform init
+                  ${pkgs.terraform}/bin/terraform apply
+                ''
+              );
+            };
+            "destroy-one-oc" = {
+              type = "app";
+              program = toString (
+                pkgs.writeShellScript "destroy- -oc" ''
+                  cd hosts/one.oc.kpt.link
+                  ${terranixBin}/bin/terranix terraform.nix > config.tf.json
+                  ${pkgs.terraform}/bin/terraform init
+                  ${pkgs.terraform}/bin/terraform destroy
+                ''
+              );
+            };
+            "apply-two-oc" = {
+              type = "app";
+              program = toString (
+                pkgs.writeShellScript "apply-two-oc" ''
+                  cd hosts/two.oc.kpt.link
+                  ${terranixBin}/bin/terranix terraform.nix > config.tf.json
+                  ${pkgs.terraform}/bin/terraform init
+                  ${pkgs.terraform}/bin/terraform apply
+                ''
+              );
+            };
           };
-          "destroy-cloudflare" = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "destroy-cloudflare" ''
-                cd hosts/cloudflare-global
-                ${terranixBin}/bin/terranix terraform.nix > config.tf.json
-                ${pkgs.terraform}/bin/terraform init
-                ${pkgs.terraform}/bin/terraform destroy
-              ''
-            );
-          };
-          "apply-three-oc" = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "apply-three-oc" ''
-                cd hosts/three.oc.kpt.link
-                ${terranixBin}/bin/terranix terraform.nix > config.tf.json
-                ${pkgs.terraform}/bin/terraform init
-                ${pkgs.terraform}/bin/terraform apply
-              ''
-            );
-          };
-          "destroy-three-oc" = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "destroy-three-oc" ''
-                cd hosts/three.oc.kpt.link
-                ${terranixBin}/bin/terranix terraform.nix > config.tf.json
-                ${pkgs.terraform}/bin/terraform init
-                ${pkgs.terraform}/bin/terraform destroy
-              ''
-            );
-          };
-          "apply-one-oc" = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "apply-one-oc" ''
-                cd hosts/one.oc.kpt.link
-                ${terranixBin}/bin/terranix terraform.nix > config.tf.json
-                ${pkgs.terraform}/bin/terraform init
-                ${pkgs.terraform}/bin/terraform apply
-              ''
-            );
-          };
-          "destroy-one-oc" = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "destroy- -oc" ''
-                cd hosts/one.oc.kpt.link
-                ${terranixBin}/bin/terranix terraform.nix > config.tf.json
-                ${pkgs.terraform}/bin/terraform init
-                ${pkgs.terraform}/bin/terraform destroy
-              ''
-            );
-          };
-          "apply-two-oc" = {
-            type = "app";
-            program = toString (
-              pkgs.writeShellScript "apply-two-oc" ''
-                cd hosts/two.oc.kpt.link
-                ${terranixBin}/bin/terranix terraform.nix > config.tf.json
-                ${pkgs.terraform}/bin/terraform init
-                ${pkgs.terraform}/bin/terraform apply
-              ''
-            );
-          };
-        };
+      };
     };
 }

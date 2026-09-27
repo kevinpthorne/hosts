@@ -230,8 +230,10 @@ in
 
   services.anycast-edge = {
     enable = true;
-    manifest = "CHANGE ME"; # TODO: path to manifest.pb (SignedCapabilityManifest)
+    manifestKey = (builtins.readFile ./anycast-manifest.signed.b64);
     caPubKey = caPubKey;
+    identityKey = "/var/keys/p2p-vpn/identity.key";
+    listenP2P = "/ip4/0.0.0.0/udp/4003/quic-v1";
   };
 
   system.stateVersion = "24.11";

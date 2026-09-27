@@ -296,11 +296,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1790007863,
-        "narHash": "sha256-BhGUMl140gfQ6FTo5hxx4Qzk6D8g3S1sbIfTMzxIvf0=",
+        "lastModified": 1790476278,
+        "narHash": "sha256-UFhRE+Hm051r/Y/HZAAjG8l+kIPdbh1XVBDQL1+TOcU=",
         "owner": "kevinpthorne",
         "repo": "p2p-anycast",
-        "rev": "a368eacd81f80a7e22ecb4a349669bc2747f8d51",
+        "rev": "3e92a70cdc094e64d5855f2f294449b62aa8df7c",
         "type": "github"
       },
       "original": {
