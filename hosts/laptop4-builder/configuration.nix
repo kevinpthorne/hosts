@@ -18,6 +18,18 @@
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  nix.settings = {
+    extra-substituters = [
+      "https://nixos-raspberrypi.cachix.org"
+      "https://p2p-vpn.cachix.org"
+      "https://libraryofalexandria.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
+      "p2p-vpn.cachix.org-1:tH4Izgml6yIvPksO7CL3AgmorgMFn601Nto/qgQYAuk="
+      "libraryofalexandria.cachix.org-1:0LK2J/wWh2hTvOYz10cRcsjCQP5zh/3q7xm5Z4+77bA="
+    ];
+  };
 
   networking.hostName = "laptop4-builder"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -95,7 +107,11 @@
     advertise = "192.168.64.4/24";
 
     # The Multiaddr of the bootstrap relay
-    relay = "/ip4/54.211.99.58/udp/4002/quic-v1/p2p/QmZYJRws1XENarW52qwjDzMrrLAWRUAhPqBoRMZSrMaDpx";
+    relays = [
+      "/dns4/one.oc.kpt.link/udp/4002/quic-v1/p2p/Qmd3GpKPfKAeq4ppr82ypW7psuknbHNEkdHM2T7hzn8NJE"
+      "/dns4/two.oc.kpt.link/udp/4002/quic-v1/p2p/Qmenk2L1wWG5HPmXAP5ndcerwXXDh9gD8oF8cJePFnz6h9"
+      "/dns4/three.oc.kpt.link/udp/4002/quic-v1/p2p/QmX1xGoRbKm6zrcWP3NUxZwR3nese1pF1Bxq2GyA3pMwtn"
+    ];
 
     # Required private keys (absolute paths on the host managed via sops-nix/agenix)
     dataKeyPath = "/var/keys/p2p-vpn/data.key";
