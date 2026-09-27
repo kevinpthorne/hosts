@@ -115,6 +115,24 @@
         "type": "github"
       }
     },
+    "flake-utils_3": {
+      "inputs": {
+        "systems": "systems_3"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -242,6 +260,22 @@
     },
     "nixpkgs_3": {
       "locked": {
+        "lastModified": 1789785513,
+        "narHash": "sha256-B44WL6h0XoLjJ41bUPJk0X5SDinLCII//6EcBLXKiJ0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "20b1ddd1aa5ace70c9468305030aa4f9ef79671b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
         "lastModified": 1781074563,
         "narHash": "sha256-md8WlXOlfnIeHeOScMTTHFyf2d6iaTwPl2apR5EQ3P4=",
         "owner": "nixos",
@@ -256,17 +290,36 @@
         "type": "github"
       }
     },
-    "p2p-vpn": {
+    "p2p-anycast": {
       "inputs": {
         "flake-utils": "flake-utils_2",
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1787513664,
-        "narHash": "sha256-UoB1CzIAJPHqV9kNB/TKdZkKyYVZIhdN3Ytj29XnLhI=",
+        "lastModified": 1790007863,
+        "narHash": "sha256-BhGUMl140gfQ6FTo5hxx4Qzk6D8g3S1sbIfTMzxIvf0=",
+        "owner": "kevinpthorne",
+        "repo": "p2p-anycast",
+        "rev": "a368eacd81f80a7e22ecb4a349669bc2747f8d51",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kevinpthorne",
+        "repo": "p2p-anycast",
+        "type": "github"
+      }
+    },
+    "p2p-vpn": {
+      "inputs": {
+        "flake-utils": "flake-utils_3",
+        "nixpkgs": "nixpkgs_4"
+      },
+      "locked": {
+        "lastModified": 1787539635,
+        "narHash": "sha256-pfGs6yIU/hiYYpIc4DRsnfrAIVctryRnyLUkoyGJN3A=",
         "owner": "kevinpthorne",
         "repo": "p2p-vpn",
-        "rev": "5f2cc24eaca4aeaccaf81fa3b488446db1e34303",
+        "rev": "b149f53c51374fde60584e7af0faa8df954ec251",
         "type": "github"
       },
       "original": {
@@ -283,6 +336,7 @@
         "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-darwin": "nixpkgs-darwin",
+        "p2p-anycast": "p2p-anycast",
         "p2p-vpn": "p2p-vpn",
         "terranix": "terranix"
       }
@@ -348,6 +402,21 @@
         "type": "github"
       }
     },
+    "systems_4": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "terranix": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -355,7 +424,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "systems": "systems_3"
+        "systems": "systems_4"
       },
       "locked": {
         "lastModified": 1784465933,

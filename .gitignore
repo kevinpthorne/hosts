@@ -4,3 +4,4 @@ result
 .terraform.lock.hcl
 *.tfstate*
 *.key
+.DS_Store

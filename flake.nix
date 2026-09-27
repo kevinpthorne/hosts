@@ -22,6 +22,8 @@
 
     p2p-vpn.url = "github:kevinpthorne/p2p-vpn";
 
+    p2p-anycast.url = "github:kevinpthorne/p2p-anycast";
+
     terranix = {
       url = "github:terranix/terranix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,6 +46,7 @@
       terranix,
       colmena,
       disko,
+      p2p-anycast,
       ...
     }@inputs:
     {
@@ -102,6 +105,7 @@
           system = "aarch64-linux";
           modules = [
             inputs.p2p-vpn.nixosModules.default
+            inputs.p2p-anycast.nixosModules.anycast-edge
             inputs.colmena.nixosModules.deploymentOptions
             inputs.disko.nixosModules.disko
             ./hosts/three.oc.kpt.link/configuration.nix
@@ -111,6 +115,7 @@
           system = "aarch64-linux";
           modules = [
             inputs.p2p-vpn.nixosModules.default
+            inputs.p2p-anycast.nixosModules.anycast-edge
             inputs.colmena.nixosModules.deploymentOptions
             inputs.disko.nixosModules.disko
             ./hosts/one.oc.kpt.link/configuration.nix
@@ -120,6 +125,7 @@
           system = "aarch64-linux";
           modules = [
             inputs.p2p-vpn.nixosModules.default
+            inputs.p2p-anycast.nixosModules.anycast-edge
             inputs.colmena.nixosModules.deploymentOptions
             inputs.disko.nixosModules.disko
             ./hosts/two.oc.kpt.link/configuration.nix
@@ -169,6 +175,7 @@
         "one.oc.kpt.link" = {
           imports = [
             inputs.p2p-vpn.nixosModules.default
+            inputs.p2p-anycast.nixosModules.anycast-edge
             inputs.disko.nixosModules.disko
             ./hosts/one.oc.kpt.link/configuration.nix
           ];
@@ -176,6 +183,7 @@
         "two.oc.kpt.link" = {
           imports = [
             inputs.p2p-vpn.nixosModules.default
+            inputs.p2p-anycast.nixosModules.anycast-edge
             inputs.disko.nixosModules.disko
             ./hosts/two.oc.kpt.link/configuration.nix
           ];
@@ -183,6 +191,7 @@
         "three.oc.kpt.link" = {
           imports = [
             inputs.p2p-vpn.nixosModules.default
+            inputs.p2p-anycast.nixosModules.anycast-edge
             inputs.disko.nixosModules.disko
             ./hosts/three.oc.kpt.link/configuration.nix
           ];

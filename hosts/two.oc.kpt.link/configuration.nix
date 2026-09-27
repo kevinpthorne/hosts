@@ -4,27 +4,8 @@
   lib,
   ...
 }:
-
-{
-  imports = [
-    ../_modules/kevint-defaults.nix
-    ../_modules/oci-hardware.nix
-    ../_modules/secure-ddns.nix
-  ];
-
-  networking.hostName = "two-oc";
-  networking.domain = "kpt.link";
-
-  services.secure-ddns.enable = true;
-
-  services.p2p-vpn = {
-    enable = true;
-    mode = "relay";
-    cluster = "bastion-vpn";
-    identityPath = "/var/keys/p2p-vpn/identity.key";
-    extDns = "two.oc.kpt.link";
-
-    caKey = ''
+let 
+  caPubKey = ''
       -----BEGIN ML-DSA-87 PUBLIC KEY-----
       c/ZCZ44lt41VFe5bRCrcFQCx4dudUAWijzlWwSfIDlmticwlnqPddfsTiEJMiBeR
       h9sPqYIANJ+aQX8YxNuv4mWyM2xw/nbiHSznijTccxyJ5jtHqVlHi8nPysaBmZtg
@@ -82,6 +63,27 @@
       JjNP8hI5QuSNnTi3veOOVmiRMRxSIw5Fj8X18B2A2sVk77/n7qFJRK0Mxkq1oU8h
       -----END ML-DSA-87 PUBLIC KEY-----
     '';
+in 
+{
+  imports = [
+    ../_modules/kevint-defaults.nix
+    ../_modules/oci-hardware.nix
+    ../_modules/secure-ddns.nix
+  ];
+
+  networking.hostName = "two-oc";
+  networking.domain = "kpt.link";
+
+  services.secure-ddns.enable = true;
+
+  services.p2p-vpn = {
+    enable = true;
+    mode = "relay";
+    cluster = "bastion-vpn";
+    identityPath = "/var/keys/p2p-vpn/identity.key";
+    extDns = "two.oc.kpt.link";
+
+    caKey = caPubKey;
 
     nodeSig = ''
       -----BEGIN ML-DSA-87 SIGNATURE-----
@@ -218,6 +220,12 @@
 
   networking.firewall.allowedTCPPorts = [ 4002 ];
   networking.firewall.allowedUDPPorts = [ 4002 ];
+
+  services.anycast-edge = {
+    enable = true;
+    manifest = "CHANGE ME"; # TODO: path to manifest.pb (SignedCapabilityManifest)
+    caPubKey = caPubKey; # TODO: paste the ca.pub PEM string from your anycast-ca
+  };
 
   system.stateVersion = "24.11";
 }

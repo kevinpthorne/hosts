@@ -1,0 +1,8 @@
+{
+  "serial_number": 1,
+  "subject_id": "one.oc.kpt.link",
+  "role": "EDGE_ROUTER",
+  "libp2p_peer_id": "Qmd3GpKPfKAeq4ppr82ypW7psuknbHNEkdHM2T7hzn8NJE",
+  "validity_days": 365,
+  "capabilities": []
+}
