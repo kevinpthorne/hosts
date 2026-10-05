@@ -71,6 +71,7 @@ in
     ../_modules/oci-hardware.nix
     ../_modules/discord-alerts.nix
     ../_modules/secure-ddns.nix
+    ../_modules/dmz-hardening.nix
   ];
 
   networking.hostName = "one-oc";
@@ -234,6 +235,11 @@ in
     caPubKey = caPubKey;
     identityKey = "/var/keys/p2p-vpn/identity.key";
     listenP2P = "/ip4/0.0.0.0/udp/4003/quic-v1";
+  };
+
+  security.dmz-hardening = {
+    enable = true;
+    adminDynDns = "k.kpt.link";
   };
 
   system.stateVersion = "24.11";
