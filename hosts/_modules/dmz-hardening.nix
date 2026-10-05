@@ -121,9 +121,9 @@ in {
         ExecStart = "${pkgs.writeShellScript "update-geoip-us" ''
           set -eu
           mkdir -p /var/lib/geoip
-          # Fetch latest US CIDR blocks
-          curl -sS -L https://raw.githubusercontent.com/herrbischoff/country-ip-blocks/master/ipv4/us.cidr > /var/lib/geoip/us-ipv4.cidr.tmp
-          curl -sS -L https://raw.githubusercontent.com/herrbischoff/country-ip-blocks/master/ipv6/us.cidr > /var/lib/geoip/us-ipv6.cidr.tmp
+          # Fetch latest US CIDR blocks (fail on HTTP errors)
+          curl -sSfL http://www.ipdeny.com/ipblocks/data/countries/us.zone > /var/lib/geoip/us-ipv4.cidr.tmp
+          curl -sSfL http://www.ipdeny.com/ipv6/ipaddresses/blocks/us.zone > /var/lib/geoip/us-ipv6.cidr.tmp
           
           mv /var/lib/geoip/us-ipv4.cidr.tmp /var/lib/geoip/us-ipv4.cidr
           mv /var/lib/geoip/us-ipv6.cidr.tmp /var/lib/geoip/us-ipv6.cidr
@@ -179,6 +179,8 @@ in {
       preStart = ''
         mkdir -p /var/lib/geoip
         if [ ! -f /var/lib/geoip/us-set.nft ]; then
+          # FAIL CLOSED: If the GeoIP download fails, default to dropping all traffic
+          # to protect the VoIP services from the world.
           echo "define us_ipv4 = { 127.0.0.1 }" > /var/lib/geoip/us-set.nft
           echo "define us_ipv6 = { ::1 }" >> /var/lib/geoip/us-set.nft
         fi
@@ -196,7 +198,8 @@ in {
         }
         
         chain prerouting {
-          type filter hook prerouting priority -300; policy accept;
+          # Conntrack runs at priority -200. This hook MUST be > -200 so 'ct state' works!
+          type filter hook prerouting priority -150; policy accept;
           
           # Whitelist Admin IP from stateful checks/rate-limiting
           ip saddr @admin_ips accept
@@ -204,6 +207,12 @@ in {
           # Allow established and related connections (stateful firewall)
           # This is CRITICAL so our outbound requests (DNS, curl) can receive replies!
           ct state established,related accept
+          
+          # Whitelist local RFC1918 networks from GeoIP blocking
+          ip saddr { 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8 } accept
+          ip6 saddr { ::1, fe80::/10, fd00::/8 } accept
+          
+          tcp dport 22 accept
           
           # Drop new connections originating from outside the US
           ip saddr != $us_ipv4 drop
