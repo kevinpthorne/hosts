@@ -101,6 +101,11 @@ in {
     # Firewall & GeoIP Blocking (nftables)
     # ---------------------------------------------------------
     networking.nftables.enable = true;
+    # Disable pre-flight syntax checks during the Nix build phase.
+    # The check will fail because the sandbox lacks both the 'enp0s6' 
+    # network interface and the dynamically generated GeoIP include files.
+    networking.nftables.checkRuleset = false;
+
     # Ensure packets dropped by closed ports are logged so CrowdSec sees port scans
     networking.firewall.logRefusedConnections = true;
 
@@ -153,9 +158,6 @@ in {
           set -eu
           IP=$(dig +short ${cfg.adminDynDns} A | tail -n1)
           if [ -n "$IP" ]; then
-            nft flush set netdev dmz-ingress admin_ips || true
-            nft add element netdev dmz-ingress admin_ips { $IP } || true
-            
             nft flush set inet dmz-hardening admin_ips || true
             nft add element inet dmz-hardening admin_ips { $IP } || true
           fi
@@ -183,38 +185,12 @@ in {
       '';
     };
 
-    # Custom nftables table for our ingress filtering (Stateless, NIC-level)
-    networking.nftables.tables."dmz-ingress" = {
-      family = "netdev";
-      content = ''
-        include "/var/lib/geoip/us-set.nft"
-        
-        set admin_ips {
-          type ipv4_addr
-        }
-        
-        chain ingress {
-          # Hook in at the NIC driver level (ingress) for ultra-fast, stateless packet dropping
-          type filter hook ingress device "${cfg.publicInterface}" priority -500; policy accept;
-          
-          # Whitelist Admin IP
-          ip saddr @admin_ips accept
-          
-          # Whitelist local RFC1918 networks from GeoIP blocking
-          ip saddr { 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8 } accept
-          ip6 saddr { ::1, fe80::/10, fd00::/8 } accept
-          
-          # Drop traffic originating from outside the US immediately at the NIC level
-          ip saddr != $us_ipv4 drop
-          ip6 saddr != $us_ipv6 drop
-        }
-      '';
-    };
-
     # Custom nftables table for stateful hardening
     networking.nftables.tables."dmz-hardening" = {
       family = "inet";
       content = ''
+        include "/var/lib/geoip/us-set.nft"
+
         set admin_ips {
           type ipv4_addr
         }
@@ -226,12 +202,15 @@ in {
           ip saddr @admin_ips accept
           
           # Allow established and related connections (stateful firewall)
+          # This is CRITICAL so our outbound requests (DNS, curl) can receive replies!
           ct state established,related accept
+          
+          # Drop new connections originating from outside the US
+          ip saddr != $us_ipv4 drop
+          ip6 saddr != $us_ipv6 drop
           
           # Per-IP Rate Limiting: 
           # Drop new connections from a single IP exceeding 50/s (with a burst of 100).
-          # We log the drop so that CrowdSec can detect the flood and ban the IP.
-          # This requires connection tracking ('ct state new'), so it must happen in prerouting, not ingress.
           ct state new meter flood_ipv4 { ip saddr limit rate over 50/second burst 100 packets } log drop
           ct state new meter flood_ipv6 { ip6 saddr limit rate over 50/second burst 100 packets } log drop
         }
