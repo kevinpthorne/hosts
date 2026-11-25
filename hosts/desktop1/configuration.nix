@@ -171,7 +171,6 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  openhands.enable = false;
   services.ollama = {
     # port 11434
     enable = true;
