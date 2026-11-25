@@ -174,6 +174,7 @@
 
   openhands.enable = false;
   services.ollama = {
+    # port 11434
     enable = true;
     acceleration = "cuda";
     loadModels = [ "qwen3-coder:30b" ];
