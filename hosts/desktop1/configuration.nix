@@ -172,7 +172,16 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  openhands.enable = true;
+  openhands.enable = false;
+  services.ollama = {
+    enable = true;
+    acceleration = "cuda";
+    loadModels = [ "qwen3-coder:30b" ];
+    environmentVariables = {
+      OLLAMA_FLASH_ATTENTION = "1";
+      OLLAMA_KV_CACHE_TYPE = "q8_0";
+    };
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
