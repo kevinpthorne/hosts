@@ -9,7 +9,6 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./../_modules/virt-manager.nix
-      ./../_modules/openhands.nix
     ];
 
   # Bootloader.
@@ -177,10 +176,16 @@
     # port 11434
     enable = true;
     acceleration = "cuda";
-    loadModels = [ "qwen3-coder:30b" ];
+    loadModels = [
+      "qwen3-coder:30b"
+      "qwen3.8:27b"
+      "gemma4:31b"
+      "gemma4:26b"
+    ];
     environmentVariables = {
       OLLAMA_FLASH_ATTENTION = "1";
       OLLAMA_KV_CACHE_TYPE = "q8_0";
+      OLLAMA_CONTEXT_LENGTH = "32768";
     };
   };
 
