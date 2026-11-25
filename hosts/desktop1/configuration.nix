@@ -172,9 +172,10 @@
   # networking.firewall.enable = false;
 
   services.ollama = {
-    # port 11434
     enable = true;
     acceleration = "cuda";
+    port = 11434;
+    host = "0.0.0.0";
     loadModels = [
       "qwen3-coder:30b"
       "qwen3.8:27b"
