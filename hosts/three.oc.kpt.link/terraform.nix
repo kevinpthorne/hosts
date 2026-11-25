@@ -97,4 +97,17 @@ in
       destination_port_range = { max = 4002; min = 4002; };
     };
   };
+  resource.oci_core_network_security_group_security_rule.whip_tcp = {
+    network_security_group_id = "\${oci_core_network_security_group.ssh_nsg.id}";
+    direction = "INGRESS";
+    protocol = "6";
+    source = "0.0.0.0/0";
+    source_type = "CIDR_BLOCK";
+    tcp_options = {
+      destination_port_range = {
+        max = 3334;
+        min = 3334;
+      };
+    };
+  };
 }

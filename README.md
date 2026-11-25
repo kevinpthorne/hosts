@@ -26,6 +26,9 @@ nix run .#apply-three-oc
 
 Provide the tenant/compartment OCID and the SSH CIDR.
 
+`one.oc.kpt.link` and `three.oc.kpt.link` use separate NSGs; both declare public TCP 3334 ingress for encrypted OME HTTPS/WHIP.
+Pushing changes does not apply OCI rules. Authenticate, then run each host's apply app (`apply-one-oc` and `apply-three-oc`).
+
 ### 3. Install NixOS with nixos-anywhere
 
 Once the infrastructure is up, use `nixos-anywhere` to install NixOS over the initial Ubuntu boot image. Replace `<IP_ADDRESS>` with the public IP of the newly provisioned instance.
